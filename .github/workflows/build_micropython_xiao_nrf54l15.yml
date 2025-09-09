@@ -55,10 +55,10 @@ jobs:
       # Build MicroPython for Xiao nRF54L15
       - name: Build for Xiao nRF54L15
         run: |
-          cd /workspaces/micropython-seeed-boards/micropython-seeed-boards
           source zephyrproject/zephyr/zephyr-env.sh
-          pushd lib/micropython
-          git clone https://github.com/micropython/micropython.git
+          pushd lib/micropython/ports/zephyr
+          git fetch origin
+          git reset --hard origin/master
           gh pr checkout 18030
           popd
 
