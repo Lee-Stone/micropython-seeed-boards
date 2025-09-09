@@ -57,7 +57,8 @@ jobs:
         run: |
           source zephyrproject/zephyr/zephyr-env.sh
           pushd lib/micropython/ports/zephyr && gh pr checkout 18030 && popd
-          west build --build-dir $GITHUB_WORKSPACE/build_nrf54l15 ./lib/micropython/ports/zephyr --pristine --board xiao_nrf54l15/nrf54l15/cpuapp --sysbuild -- -DBOARD_ROOT=$GITHUB_WORKSPACE -DEXTRA_DTC_OVERLAY_FILE=$GITHUB_WORKSPACE/boards/xiao_nrf54l15_nrf54l15_cpuapp.overlay
+          export PROJECT_DIR=$(pwd)
+          west build ./lib/micropython/ports/zephyr --pristine --board xiao_nrf54l15/nrf54l15/cpuapp --sysbuild --   -DBOARD_ROOT=$PROJECT_DIR/   -DEXTRA_DTC_OVERLAY_FILE=$PROJECT_DIR/boards/xiao_nrf54l15_nrf54l15_cpuapp.overlay  -DPM_STATIC_YML_FILE=$PROJECT_DIR/boards/pm_static_xiao_nrf54l15_nrf54l15_cpuapp.yml  -DEXTRA_CONF_FILE=$PROJECT_DIR/boards/xiao_nrf54l15_nrf54l15_cpuapp.conf
         env:
           ZEPHYR_SDK_INSTALL_DIR: ~/zephyr-sdk/zephyr-sdk-0.17.0
 
