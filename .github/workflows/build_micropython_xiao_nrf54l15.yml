@@ -13,19 +13,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
+      # 修复子模块检出问题
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          submodules: false  # 先禁用递归子模块检出
 
-      # Set up Python (required for Zephyr and west)
+      # 手动处理 micropython 子模块
+      - name: Setup MicroPython submodule
+        run: |
+          git submodule init lib/micropython
+          git submodule update --depth=1 lib/micropython
+          cd lib/micropython
+          # 强制重置到 PR 所需状态
+          git fetch origin refs/pull/18030/head:pr-18030 --depth=1
+          git checkout pr-18030
+          cd ../..
+
+      # 设置 Python 环境
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      # Install Zephyr dependencies
+      # 安装 Zephyr 依赖
       - name: Install Zephyr dependencies
         run: |
           sudo apt-get update
@@ -34,7 +45,7 @@ jobs:
             python3-tk python3-wheel xz-utils file libpython3-dev libffi-dev gh
           pip3 install west
 
-      # Initialize and set up Zephyr
+      # 初始化 Zephyr 项目
       - name: Set up Zephyr
         run: |
           west init zephyrproject -m https://github.com/zephyrproject-rtos/zephyr --mr v4.0.0
@@ -43,7 +54,7 @@ jobs:
           west zephyr-export
           pip3 install -r zephyr/scripts/requirements.txt
 
-      # Install Zephyr SDK
+      # 安装 Zephyr SDK
       - name: Install Zephyr SDK
         run: |
           wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.17.0/zephyr-sdk-0.17.0_linux-x86_64.tar.xz
@@ -52,16 +63,21 @@ jobs:
           cd ~/zephyr-sdk/zephyr-sdk-0.17.0
           ./setup.sh -t all -h
 
-      # Build MicroPython for Xiao nRF54L15
+      # 构建 nRF54L15 固件
       - name: Build for Xiao nRF54L15
         run: |
           source zephyrproject/zephyr/zephyr-env.sh
-          pushd lib/micropython/ports/zephyr && gh pr checkout 18030 && popd
-          west build --build-dir $GITHUB_WORKSPACE/build_nrf54l15 ./lib/micropython/ports/zephyr --pristine --board xiao_nrf54l15/nrf54l15/cpuapp --sysbuild -- -DBOARD_ROOT=$GITHUB_WORKSPACE -DEXTRA_DTC_OVERLAY_FILE=$GITHUB_WORKSPACE/boards/xiao_nrf54l15_nrf54l15_cpuapp.overlay
+          west build --build-dir $GITHUB_WORKSPACE/build_nrf54l15 \
+            ./lib/micropython/ports/zephyr \
+            --pristine \
+            --board xiao_nrf54l15/nrf54l15/cpuapp \
+            --sysbuild \
+            -- -DBOARD_ROOT=$GITHUB_WORKSPACE \
+               -DEXTRA_DTC_OVERLAY_FILE=$GITHUB_WORKSPACE/boards/xiao_nrf54l15_nrf54l15_cpuapp.overlay
         env:
           ZEPHYR_SDK_INSTALL_DIR: ~/zephyr-sdk/zephyr-sdk-0.17.0
 
-      # Upload Xiao nRF54L15 firmware artifacts
+      # 上传 nRF54L15 固件
       - name: Upload Xiao nRF54L15 artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -70,7 +86,7 @@ jobs:
             build_nrf54l15/zephyr/zephyr/zephyr.elf
             build_nrf54l15/zephyr/zephyr/zephyr.hex
 
-      # Upload Xiao nRF54L15 artifacts to Release (only on release event)
+      # 发布时上传到 Release
       - name: Upload Xiao nRF54L15 artifacts to Release
         if: github.event_name == 'release'
         run: |
@@ -81,15 +97,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build MicroPython for Xiao nRF52840
+      # 构建 nRF52840 固件
       - name: Build for Xiao nRF52840
         run: |
           source zephyrproject/zephyr/zephyr-env.sh
-          west build --build-dir $GITHUB_WORKSPACE/build_nrf52840 ./lib/micropython/ports/zephyr --pristine --board xiao_ble
+          west build --build-dir $GITHUB_WORKSPACE/build_nrf52840 \
+            ./lib/micropython/ports/zephyr \
+            --pristine \
+            --board xiao_ble
         env:
           ZEPHYR_SDK_INSTALL_DIR: ~/zephyr-sdk/zephyr-sdk-0.17.0
 
-      # Upload Xiao nRF52840 firmware artifacts
+      # 上传 nRF52840 固件
       - name: Upload Xiao nRF52840 artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -98,7 +117,7 @@ jobs:
             build_nrf52840/zephyr/zephyr.elf
             build_nrf52840/zephyr/zephyr.uf2
 
-      # Upload Xiao nRF52840 artifacts to Release (only on release event)
+      # 发布时上传到 Release
       - name: Upload Xiao nRF52840 artifacts to Release
         if: github.event_name == 'release'
         run: |
