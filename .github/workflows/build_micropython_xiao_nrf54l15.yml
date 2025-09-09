@@ -13,22 +13,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 修复子模块检出问题
+      # 禁用默认子模块检出
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: false  # 先禁用递归子模块检出
+          submodules: false
 
       # 手动处理 micropython 子模块
       - name: Setup MicroPython submodule
         run: |
-          git submodule init lib/micropython
-          git submodule update --depth=1 lib/micropython
+          # 移除现有子模块引用
+          git config --unset submodule.lib/micropython.url
+          git config --unset submodule.lib/micropython.active
+          git config --unset submodule.lib/micropython.path
+          
+          # 重新添加子模块
+          git submodule add --force https://github.com/micropython/micropython.git lib/micropython
+          
+          # 进入子模块目录并检出所需分支
           cd lib/micropython
-          # 强制重置到 PR 所需状态
-          git fetch origin refs/pull/18030/head:pr-18030 --depth=1
+          git fetch origin pull/18030/head:pr-18030
           git checkout pr-18030
           cd ../..
+          
+          # 更新父仓库引用
+          git add lib/micropython
+          git commit -m "Update submodule reference" --allow-empty || true
 
       # 设置 Python 环境
       - name: Set up Python
