@@ -22,26 +22,30 @@ jobs:
       # 手动处理 micropython 子模块
       - name: Setup MicroPython submodule
         run: |
-          # 检查子模块目录是否存在
-          if [ -d "lib/micropython" ]; then
-            # 移除现有目录
-            rm -rf lib/micropython
-          fi
+          # 完全移除子模块配置
+          git config -f .gitmodules --remove-section submodule.lib/micropython
+          git config -f .git/config --remove-section submodule.lib/micropython
+          git rm --cached lib/micropython
           
-          # 初始化子模块
-          git submodule init lib/micropython
+          # 删除现有目录
+          rm -rf lib/micropython
           
-          # 更新子模块（浅克隆）
-          git submodule update --depth=1 lib/micropython
+          # 手动克隆所需分支
+          mkdir -p lib
+          git clone --depth 1 --branch pr-18030 https://github.com/micropython/micropython.git lib/micropython
           
-          # 进入子模块目录
+          # 添加为子模块
+          git submodule add --force https://github.com/micropython/micropython.git lib/micropython
+          
+          # 进入目录并更新
           cd lib/micropython
-          
-          # 获取PR引用并检出
-          git fetch origin pull/18030/head:pr-18030 --depth=1
+          git fetch origin pull/18030/head:pr-18030
           git checkout pr-18030
-          
           cd ../..
+          
+          # 更新父仓库引用
+          git add lib/micropython
+          git commit -m "Update MicroPython submodule" --allow-empty || true
 
       # 设置 Python 环境
       - name: Set up Python
