@@ -55,18 +55,12 @@ jobs:
       # Build MicroPython for Xiao nRF54L15
       - name: Build for Xiao nRF54L15
         run: |
+          cd /workspaces/micropython-seeed-boards/micropython-seeed-boards
           source zephyrproject/zephyr/zephyr-env.sh
-          pushd lib/micropython/ports/zephyr
-          git fetch origin
-          git reset --hard origin/master
+          pushd lib/micropython
+          git clone https://github.com/micropython/micropython.git
           gh pr checkout 18030
           popd
-
-          if [ ! -d "lib/micropython/ports/zephyr" ]; then
-            echo "ERROR: Directory lib/micropython/ports/zephyr missing!"
-            ls -la lib/micropython/ports/
-            exit 1
-          fi
 
           export PROJECT_DIR=$(pwd)
           west build ./lib/micropython/ports/zephyr \
@@ -77,9 +71,7 @@ jobs:
             -DBOARD_ROOT=$PROJECT_DIR/ \
             -DEXTRA_DTC_OVERLAY_FILE=$PROJECT_DIR/boards/xiao_nrf54l15_nrf54l15_cpuapp.overlay \
             -DPM_STATIC_YML_FILE=$PROJECT_DIR/boards/pm_static_xiao_nrf54l15_nrf54l15_cpuapp.yml \
-            -DEXTRA_CONF_FILE=$PROJECT_DIR/boards/xiao_nrf54l15_nrf54l15_cpuapp.conf \
-            -DCONFIG_ENTROPY_GENERATOR=y \
-            -DCONFIG_ENTROPY_NRF5_RNG=y
+            -DEXTRA_CONF_FILE=$PROJECT_DIR/boards/xiao_nrf54l15_nrf54l15_cpuapp.conf 
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ZEPHYR_SDK_INSTALL_DIR: ~/zephyr-sdk/zephyr-sdk-0.17.0
