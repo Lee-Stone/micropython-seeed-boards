@@ -37,8 +37,8 @@ jobs:
       # Initialize and set up Zephyr
       - name: Set up Zephyr
         run: |
-          west init zephyrproject -m https://github.com/zephyrproject-rtos/zephyr --mr v4.0.0
-          cd zephyrproject
+          west init -m https://github.com/nrfconnect/sdk-nrf --mr v3.0.2 ncs
+          cd ncs
           west update
           west zephyr-export
           pip3 install -r zephyr/scripts/requirements.txt
