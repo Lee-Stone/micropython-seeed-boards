@@ -39,6 +39,7 @@ jobs:
           git clone https://github.com/micropython/micropython.git
           cd micropython
           gh pr checkout 17912
+          git submodule update --init lib/berkeley-db-1.xx
           cd ports/esp32
           rm -rf build-ESP32_GENERIC
           make BOARD=ESP32_GENERIC_C5
