@@ -41,7 +41,7 @@ jobs:
           gh pr checkout 17912
           cd ports/esp32
           rm -rf build-ESP32_GENERIC
-          make BOARD=SEEED_XIAO_ESP32C5
+          make BOARD=ESP32_GENERIC_C5
         env:
           GH_TOKEN: ${{ github.token }}
 
