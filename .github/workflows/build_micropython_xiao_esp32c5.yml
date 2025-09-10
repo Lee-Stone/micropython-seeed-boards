@@ -48,11 +48,6 @@ jobs:
           git fetch origin
           git checkout master
           git pull origin master
-          
-          cd ../axtls
-          git fetch origin
-          git checkout master
-          git pull origin master
   
           cd ../../..
           gh pr checkout 17912
