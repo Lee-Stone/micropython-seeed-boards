@@ -44,6 +44,7 @@ jobs:
           cd ports/esp32
           rm -rf build-ESP32_GENERIC
           make BOARD=ESP32_GENERIC_C5
+          ls 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
