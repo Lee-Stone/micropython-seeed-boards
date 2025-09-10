@@ -1,4 +1,4 @@
-name: Build MicroPython Firmware for Seeed Xiao Esp32c5
+name: Build MicroPython Firmware for Seeed Xiao esp32c5
 
 on:
   push:
@@ -35,6 +35,26 @@ jobs:
         run: |
           . ~/esp-idf/export.sh
           cd lib/micropython
+          
+          git submodule sync --recursive
+          git submodule update --init --recursive --force
+          
+          cd lib/tinyusb
+          git fetch origin
+          git checkout master
+          git pull origin master
+          
+          cd ../pico-sdk
+          git fetch origin
+          git checkout master
+          git pull origin master
+          
+          cd ../axtls
+          git fetch origin
+          git checkout master
+          git pull origin master
+  
+          cd ../../..
           gh pr checkout 17912
           make -C mpy-cross
           cd ports/esp32

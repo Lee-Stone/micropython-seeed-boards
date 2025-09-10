@@ -63,7 +63,7 @@ jobs:
           popd
           
           sed -i '10s/#include <version.h>/#include <zephyr\/version.h>/' ncs/nrf/lib/boot_banner/banner.c
-          west build --build-dir $GITHUB_WORKSPACE/build_nrf52840 ./lib/micropython/ports/zephyr --pristine --board xiao_ble
+          west build --build-dir ./build_nrf52840 ./lib/micropython/ports/zephyr --pristine --board xiao_ble
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ZEPHYR_SDK_INSTALL_DIR: ~/zephyr-sdk/zephyr-sdk-0.17.0
@@ -74,8 +74,8 @@ jobs:
         with:
           name: xiao-nrf52840-firmware
           path: |
-            build_nrf52840/zephyr/zephyr.elf
-            build_nrf52840/zephyr/zephyr.uf2
+            build_nrf52840/zephyr/zephyr/zephyr.elf
+            build_nrf52840/zephyr/zephyr/zephyr.uf2
 
       # Upload Xiao nRF52840 artifacts to Release (only on release event)
       - name: Upload Xiao nRF52840 artifacts to Release

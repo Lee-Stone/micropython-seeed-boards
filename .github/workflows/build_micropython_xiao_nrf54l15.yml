@@ -64,7 +64,7 @@ jobs:
 
           export PROJECT_DIR=$(pwd)
           sed -i '10s/#include <version.h>/#include <zephyr\/version.h>/' ncs/nrf/lib/boot_banner/banner.c
-          west build ./lib/micropython/ports/zephyr \
+          west build --build-dir ./build_nrf54l15 ./lib/micropython/ports/zephyr \
             --pristine \
             --board xiao_nrf54l15/nrf54l15/cpuapp \
             --sysbuild \
