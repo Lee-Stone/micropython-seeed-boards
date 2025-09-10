@@ -1,4 +1,4 @@
-name: Build MicroPython Firmware for Seeed Xiao nRF54L15 and nRF52840
+name: Build MicroPython Firmware for Seeed Xiao nRF54L15
 
 on:
   push:
@@ -93,34 +93,6 @@ jobs:
           mv build_nrf54l15/zephyr/zephyr/zephyr.hex build_nrf54l15/zephyr/zephyr/xiao_nrf54l15.hex
           gh release upload ${{ github.event.release.tag_name }} \
             build_nrf54l15/zephyr/zephyr/xiao_nrf54l15.hex \
-            --clobber
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Build MicroPython for Xiao nRF52840
-      - name: Build for Xiao nRF52840
-        run: |
-          source zephyrproject/zephyr/zephyr-env.sh
-          west build --build-dir $GITHUB_WORKSPACE/build_nrf52840 ./lib/micropython/ports/zephyr --pristine --board xiao_ble
-        env:
-          ZEPHYR_SDK_INSTALL_DIR: ~/zephyr-sdk/zephyr-sdk-0.17.0
-
-      # Upload Xiao nRF52840 firmware artifacts
-      - name: Upload Xiao nRF52840 artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: xiao-nrf52840-firmware
-          path: |
-            build_nrf52840/zephyr/zephyr.elf
-            build_nrf52840/zephyr/zephyr.uf2
-
-      # Upload Xiao nRF52840 artifacts to Release (only on release event)
-      - name: Upload Xiao nRF52840 artifacts to Release
-        if: github.event_name == 'release'
-        run: |
-          mv build_nrf52840/zephyr/zephyr.uf2 build_nrf52840/zephyr/xiao_nrf52840.uf2
-          gh release upload ${{ github.event.release.tag_name }} \
-            build_nrf52840/zephyr/xiao_nrf52840.uf2 \
             --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
