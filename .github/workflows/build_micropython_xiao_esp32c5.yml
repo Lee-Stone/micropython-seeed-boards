@@ -34,12 +34,13 @@ jobs:
       - name: Build ESP32-C5 firmware
         run: |
           . ~/esp-idf/export.sh
-          cd lib/micropython   
-          git submodule sync --recursive  
-          git submodule update --init --recursive --no-fetch
-          git config submodule.lib/pico-sdk.update none
-          git config submodule.lib/axtls.update none
-          gh pr checkout 17912
+          cd lib/micropython
+          git config submodule.lib/pico-sdk.active false
+          git config submodule.lib/axtls.active false
+          git submodule update --init --recursive
+          gh pr checkout 17912 
+          mkdir -p lib/pico-sdk
+          mkdir -p lib/axtls
           make -C mpy-cross
           cd ports/esp32
           rm -rf build-ESP32_GENERIC
