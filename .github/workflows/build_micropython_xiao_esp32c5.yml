@@ -34,25 +34,11 @@ jobs:
       - name: Build ESP32-C5 firmware
         run: |
           . ~/esp-idf/export.sh
-          cd lib/micropython
-          
-          git submodule sync --recursive
-          git submodule update --init --recursive --force
-          
-          cd lib/tinyusb
+          cd lib/micropython/ports/esp32
           git fetch origin
-          git checkout master
-          git pull origin master
-          
-          cd ../pico-sdk
-          git fetch origin
-          git checkout master
-          git pull origin master
-  
-          cd ../../..
+          git reset --hard origin/master
           gh pr checkout 17912
           make -C mpy-cross
-          cd ports/esp32
           rm -rf build-ESP32_GENERIC
           make BOARD=SEEED_XIAO_ESP32C5
         env:
