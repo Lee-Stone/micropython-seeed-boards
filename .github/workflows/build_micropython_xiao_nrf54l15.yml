@@ -55,7 +55,7 @@ jobs:
       # Build MicroPython for Xiao nRF54L15
       - name: Build for Xiao nRF54L15
         run: |
-          source zephyrproject/zephyr/zephyr-env.sh
+          source ncs/zephyr/zephyr-env.sh
           pushd lib/micropython/ports/zephyr
           git fetch origin
           git reset --hard origin/master
