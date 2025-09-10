@@ -1,6 +1,9 @@
 name: Build MicroPython Firmware for Seeed Xiao esp32c5
 
 on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1'
   push:
     branches: [ master ]
   pull_request:
