@@ -1,6 +1,11 @@
 name: Build MicroPython Firmware for Seeed Xiao nRF52840
 
 on:
+  workflow_call:
+    inputs:
+      trigger:
+        required: true
+        type: string
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * 1'
