@@ -39,7 +39,7 @@ jobs:
           pushd lib/micropython/ports/renesas-ra
           git fetch origin
           git reset --hard origin/master
-          gh pr checkout 14462
+          gh pr checkout 16409
           popd
 
           cd lib/micropython/ports/renesas-ra
