@@ -36,14 +36,10 @@ jobs:
       # Build MicroPython for Xiao RA4M1
       - name: Build for Xiao RA4M1
         run: |
-          pushd lib/micropython/ports/renesas-ra
-          git fetch origin
-          git reset --hard origin/master
-          gh pr checkout 16409
-          popd
-
-          cd lib/micropython/ports/renesas-ra
-          sed -i '122s/const char \*boot_py = "boot.py";/const char *boot_py = "boards\/xiao.py";/' boardctrl.c
+          cd lib && rm -r micropython || true
+          git clone https://github.com/micropython/micropython.git
+          cd micropython && gh pr checkout 16409
+          cd ports/renesas-ra && sed -i '122s/const char \*boot_py = "boot.py";/const char *boot_py = "boards\/xiao.py";/' boardctrl.c
           make BOARD_DIR=../../../../boards/seeed/xiao_ra4m1
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
